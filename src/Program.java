@@ -42,7 +42,7 @@ public class Program {
     @Override
     public String toString() {
         if (weight!=null){
-            return String.format("%s (%s)", name, towerWeight);
+            return String.format("%s (%s - %s)", name, towerWeight, weight);
         }else{
             return String.format("%s", name);
         }

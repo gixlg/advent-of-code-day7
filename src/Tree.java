@@ -96,21 +96,34 @@ public class Tree<T> {
 
     @Override
     public String toString() {
-        return printTree(0);
+        return printTree(0, -1);
+    }
+
+
+    public String toString(int deepToStop) {
+        return printTree(0, deepToStop);
     }
 
     private static final int indent = 2;
 
-    private String printTree(int increment) {
+    private String printTree(int increment, int level) {
         String s = "";
         String inc = "";
         for (int i = 0; i < increment; ++i) {
             inc = inc + " ";
         }
         s = inc + head.toString();
-        for (Tree<T> child : leafs) {
-            s += "\n" + child.printTree(increment + indent);
+
+        if (level <= 2){
+            for (Tree<T> child : leafs) {
+                s += "\n" + child.printTree(increment + indent, level+1);
+            }
         }
+
         return s;
+    }
+
+    public ArrayList<Tree<T>> getLeafs() {
+        return leafs;
     }
 }

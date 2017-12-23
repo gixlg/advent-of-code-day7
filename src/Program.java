@@ -5,12 +5,12 @@ public class Program {
     private String name;
     private Integer weight;
     private Integer towerWeight = 0;
-    private List<String> subProgram;
+    private List<String> subPrograms;
 
     public Program(String name, String weight, List<String> subProgram) {
         this.name = name;
         this.weight = Integer.parseInt(weight);
-        this.subProgram = subProgram;
+        this.subPrograms = subProgram;
     }
 
     public Program(String name, String weight) {
@@ -19,8 +19,8 @@ public class Program {
         this.towerWeight = Integer.parseInt(weight);
     }
 
-    public List<String> getSubProgram() {
-        return subProgram;
+    public List<String> getSubPrograms() {
+        return subPrograms;
     }
 
     public String getName() {

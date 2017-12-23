@@ -3,7 +3,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ProgramLoader {
 
@@ -62,36 +61,33 @@ public class ProgramLoader {
         toRemove = new ArrayList<String>();
         for (Map.Entry<String, Tree<Program>> entry : map.entrySet()) {
             Tree<Program> selectedTree = entry.getValue();
-            if (selectedTree.getHead().getSubProgram() != null) {
-                appendSubProgram(selectedTree);
+            if (selectedTree.getHead().getSubPrograms() != null) {
+                appendSubPrograms(selectedTree);
             }
 
         }
 
-        for (String s : toRemove) {
-            map.remove(s);
-        }
+        toRemove.stream().forEach(elementToRemove -> map.remove(elementToRemove));
 
     }
 
     private List<String> toRemove;
 
-    private Tree<Program> appendSubProgram(Tree<Program> node) throws Exception {
-
+    private Tree<Program> appendSubPrograms(Tree<Program> node) throws Exception {
         Program program = node.getHead();
-        for (String programName : program.getSubProgram()) {
-            Tree<Program> subProgramTree = map.get(programName);
-            Program subProgram = subProgramTree.getHead();
-            toRemove.add(subProgram.getName());
-            node.addLeaf(subProgramTree);
-        }
-
+        program.getSubPrograms().forEach(programName -> appendSubProgram(programName, node));
         return node;
+    }
 
+    private void appendSubProgram(String programName, Tree<Program> node) {
+        Tree<Program> subProgramTree = map.get(programName);
+        Program subProgram = subProgramTree.getHead();
+        toRemove.add(subProgram.getName());
+        node.addLeaf(subProgramTree);
     }
 
 
-    public void checkTowerWeight(Tree<Program> node){
+    public void checkTowerWeight(Tree<Program> node) {
         Tree<Program> unbalancedTower = this.findUnbalancedTower(node);
         System.out.println();
         System.out.println();
@@ -99,25 +95,24 @@ public class ProgramLoader {
     }
 
 
-    public Tree<Program> findUnbalancedTower(Tree<Program> node){
+    public Tree<Program> findUnbalancedTower(Tree<Program> node) {
 
 
-        if (node.getLeafs()==null || node.getLeafs().size()==0){
+        if (node.getLeafs() == null || node.getLeafs().size() == 0) {
             return null;
         }
 
 
         for (Tree<Program> subTree : node.getLeafs()) {
             Tree<Program> unbalance = this.findUnbalancedTower(subTree);
-            if (unbalance!=null) return unbalance;
+            if (unbalance != null) return unbalance;
         }
 
 
-
-        List<Integer> weights = node.getLeafs().stream().map(tree->getTowerWeight(tree)).collect(Collectors.toList());
+        List<Integer> weights = node.getLeafs().stream().map(tree -> getTowerWeight(tree)).collect(Collectors.toList());
 
         Optional<Integer> unbalanceWeight = weights.stream()
-                .filter(i -> Collections.frequency(weights, i) ==1).findFirst();
+                .filter(i -> Collections.frequency(weights, i) == 1).findFirst();
 
         if (!unbalanceWeight.isPresent()) return null;
 
@@ -127,26 +122,26 @@ public class ProgramLoader {
     }
 
 
-    private void calculateCorrection(Tree<Program> node, Integer unbalanceWeight, List<Integer> weights){
-        Integer balanceWeight = weights.stream().filter(i -> Collections.frequency(weights, i) >1).distinct().findFirst().get();
-        System.out.println("UNbalanceWeight: "+unbalanceWeight);
-        System.out.println("balanceWeight: "+balanceWeight);
+    private void calculateCorrection(Tree<Program> node, Integer unbalanceWeight, List<Integer> weights) {
+        Integer balanceWeight = weights.stream().filter(i -> Collections.frequency(weights, i) > 1).distinct().findFirst().get();
+        System.out.println("UNbalanceWeight: " + unbalanceWeight);
+        System.out.println("balanceWeight: " + balanceWeight);
 
-        Tree<Program> unbalance = node.getLeafs().stream().filter(tree -> tree.getHead().getTowerWeight()== unbalanceWeight).findFirst().get();
+        Tree<Program> unbalance = node.getLeafs().stream().filter(tree -> tree.getHead().getTowerWeight() == unbalanceWeight).findFirst().get();
 
         Integer diff = balanceWeight - unbalanceWeight;
-        System.out.println("out: " + (unbalance.getHead().getWeight() + diff) );
+        System.out.println("out: " + (unbalance.getHead().getWeight() + diff));
     }
 
-    public Integer getTowerWeight(Tree<Program> node){
-        Integer weight =  node.getHead().getWeight();
+    public Integer getTowerWeight(Tree<Program> node) {
+        Integer weight = node.getHead().getWeight();
 
         List<Integer> subTowerWeights = new ArrayList<Integer>();
         for (Tree<Program> subTree : node.getLeafs()) {
             Integer subWeight = getTowerWeight(subTree);
 
             subTowerWeights.add(subWeight);
-            weight+= subWeight;
+            weight += subWeight;
         }
 
         node.getHead().setTowerWeight(weight);
